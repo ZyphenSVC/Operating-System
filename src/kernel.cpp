@@ -84,13 +84,39 @@ void terminal_putentryat(char c, uint8_t color, size_t x, size_t y)
 	terminal_buffer[index] = vga_entry(c, color);
 }
 
+void terminal_scroll() {
+    //const int buffer = (VGA_HEIGHT - 1) * VGA_WIDTH;
+    
+    //std::memmove(terminal_buffer, terminal_buffer + VGA_WIDTH, buffer*2);
+    
+    //for (int i = 0; i < VGA_WIDTH; ++i) {
+    //    terminal_putentryat(' ', terminal_color, i, VGA_HEIGHT - 1);
+    //}
+    for(int i = 0; i < VGA_HEIGHT; ++i){
+        for (int j = 0; j < VGA_WIDTH; ++j){
+            terminal_buffer[i * VGA_WIDTH + j] = terminal_buffer[(i + 1) * VGA_WIDTH + j];
+        }
+    }
+
+}
+
 void terminal_putchar(char c) 
 {
+    if (c == '\n') {
+	    terminal_column = 0;
+        if (++terminal_row == VGA_HEIGHT - 1) {
+            terminal_scroll();
+            terminal_row = VGA_HEIGHT - 2;
+        }
+        return;
+    }
 	terminal_putentryat(c, terminal_color, terminal_column, terminal_row);
 	if (++terminal_column == VGA_WIDTH) {
 		terminal_column = 0;
-		if (++terminal_row == VGA_HEIGHT)
-			terminal_row = 0;
+		if (++terminal_row == VGA_HEIGHT - 1) {
+            terminal_scroll();
+			terminal_row = VGA_HEIGHT - 2;
+        }
 	}
 }
 
@@ -110,7 +136,11 @@ extern "C" void kernel_main(void)
 	/* Initialize terminal interface */
 	terminal_initialize();
 
-	/* Newline support is left as an exercise. */
-	terminal_writestring("Hello, kernel World!");
+	/* Newline support is left as an exercise. */ 
+    for (size_t i = 0; i < 25; i++) {
+        terminal_writestring("Hello, kernel world!\n");
+    }
+    terminal_writestring("Helltessfa\n");
+    terminal_writestring("ssfa");
 }
 
