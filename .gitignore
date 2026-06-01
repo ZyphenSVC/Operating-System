@@ -1,0 +1,5 @@
+*.iso
+isodir
+sysroot
+.vnc-password
+.vnc-host
